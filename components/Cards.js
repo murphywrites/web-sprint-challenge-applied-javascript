@@ -25,13 +25,18 @@ const cardsEntryPoint = document.querySelector('.cards-container');
 console.log(cardsEntryPoint)
 
 axios.get(URL = 'https://lambda-times-api.herokuapp.com/articles').then( res => {
-    const articleObjectsArray =[];
+    const articleObjectsArray =[]; // establish empty array to which article objects are pushed
     const articleTopicsArray = Object.keys(res.data.articles);
-    const arrayOfArticleArraysByTopic = Object.values(res.data.articles)
+    const arrayOfArticleArraysByTopic = Object.values(res.data.articles) //create array whose items are arrays of articles of a certain topic
+    
+    // add each article obj
+    let i = 0;
     arrayOfArticleArraysByTopic.forEach( articleArray => {
         articleArray.forEach(articleObj => {
+            articleObj.topic = articleTopicsArray[`${i}`]
             articleObjectsArray.push(articleObj);
         })
+        i+=1;
 
     })
     articleObjectsArray.forEach( articleObj => {
@@ -43,12 +48,19 @@ axios.get(URL = 'https://lambda-times-api.herokuapp.com/articles').then( res => 
     // console.log(oneArticleObj)
     
     
+}).catch(err => {
+    const errMessage = document.createElement('div');
+    errMessage.classList.add('card');
+    errMessage.textContent = 'Error: Cannot Load Articles at This Time, Check Back Soon';
+    errMessage.style.color = 'red';
+    cardsEntryPoint.appendChild(errMessage)
 })
 
 function buildArticleCard (articleObj) {
 
 const container = document.createElement('div');
 container.classList.add('card');
+container.classList.add(`${articleObj.topic}`)
 
 const articleHeadline = document.createElement('div');
 articleHeadline.textContent = articleObj.headline;
